@@ -2,13 +2,26 @@
 
 class Personnage
 {
-    private $_id ;
-    private $_nom ;
-    private $_vie  ;
-    private $_degats ;
-    private $_experience  ;
+    // Attribue, Constante et Statique 
 
-    public function __construct ($id , $nom, $vie = 20, $degats = 5  , $experience = 0) 
+    //Dépend de l'objet
+    private $_id;
+    private $_nom;
+    private $_vie;
+    private $_degats;
+    private $_experience;
+
+    //Appartient à la classe 
+
+    //Ne change pas
+    const DEGATS_PETIT = 20;
+    const DEGATS_MOYEN = 50;
+    const DEGATS_FORT = 80;
+
+    // Peux être modifier 
+    private static $_texteADire = 'La partie est démarrée. Qui veut se battre !';
+
+    public function __construct($id, $nom, $vie = 20, $degats = 5, $experience = 0)
     {
         $this->_id = $id;
         $this->setNom($nom);
@@ -29,44 +42,45 @@ class Personnage
             return;
         }
         $this->_nom = $nom;
-    }  
+    }
     public function setVie($vie)
     {
-        if ($vie==0) // S'il ne s'agit pas d'un texte.
+        if ($vie == 0) // S'il n'est pas nul.
         {
             trigger_error('La vie d\'un personnage doit être supérieur à 0', E_USER_WARNING);
             return;
         }
-        if (!is_int($vie)) // S'il ne s'agit pas d'un texte.
+        if (!is_int($vie)) // S'il ne s'agit pas d'un entiers.
         {
             trigger_error('La vie d\'un personnage doit être un entier', E_USER_WARNING);
             return;
         }
         $this->_vie = $vie;
-    } 
+    }
     public function setDegats($degats)
     {
-        if (!is_int($degats)) // S'il ne s'agit pas d'un texte.
+        if (!is_int($degats)) 
         {
             trigger_error('Les dégâts d\'un personnage doit être un entier', E_USER_WARNING);
             return;
         }
-        if ($degats > 100) // On vérifie bien qu'on ne souhaite pas assigner une valeur supérieure à 100.
-        {
-            trigger_error('Les dégâts d\'un personnage ne peut dépasser 100', E_USER_WARNING);
+        // On vérifie qu'on nous donne bien soit un "DEGATS_PETIT", soit un "DEGATS_MOYEN", soit un "DEGATS_FORT".
+        if (!in_array($degats, array(self::DEGATS_PETIT, self::DEGATS_MOYEN, self::DEGATS_FORT))) {
+            trigger_error('Les dégâts du personnage ' . $this->getNom() . 'ne sont pas de soit 20 , 50 ou 80', E_USER_WARNING);
             return;
         }
         $this->_degats = $degats;
-    } 
+
+    }
     public function setExperience($experience)
     {
-        if (!is_int($experience)) // S'il ne s'agit pas d'un texte.
+        if (!is_int($experience)) 
         {
             trigger_error('L\'expérience d\'un personnage doit être un entier', E_USER_WARNING);
             return;
         }
         $this->_experience = $experience;
-    } 
+    }
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------
     //Accesseur
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -77,17 +91,17 @@ class Personnage
 
     public function getVie()
     {
-      return $this->_vie;
+        return $this->_vie;
     }
 
     public function getDegats()
     {
-      return $this->_degats;
+        return $this->_degats;
     }
-       
+
     public function getExperience()
     {
-      return $this->_experience;
+        return $this->_experience;
     }
 
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -95,19 +109,24 @@ class Personnage
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------
     public function afficher()
     {
-        print ('<br/> Le personnage : ' . $this->_nom . ' possède,  '. $this->_vie . ' point de vie, '
-               . $this->_degats . ' point de dégâts et '. $this->_experience . ' point d\'éxpérience ');
+        print('<br/> Le personnage : ' . $this->getNom() . ' possède,  ' . $this->getVie() . ' point de vie, '
+            . $this->getDegats() . ' point de dégâts et ' . $this->getExperience() . ' point d\'éxpérience ');
     }
     public function frapper(Personnage $adversaire)
     {
         $adversaire->_vie -= $this->_degats;
         $this->gagnerExperience();
-        print('<br/>' . $this->_nom . ' frappe avec un coup normal ' . $adversaire->_nom . ' et inflige  = ' . $this->_degats
-            . ' point de dégâts. <br/> Il reste a ' . $adversaire->_nom . ' , ' . $adversaire->_vie . ' Point de vie');
+        print('<br/>' . $this->getNom() . ' frappe avec un coup normal ' . $adversaire->getNom() . ' et inflige  = ' . $this->getDegats()
+            . ' point de dégâts. <br/> Il reste a ' . $adversaire->getNom() . ' , ' . $adversaire->getVie() . ' Point de vie');
     }
 
-    public function gagnerExperience ()
+    public function gagnerExperience()
     {
         $this->_experience += 1;
+    }
+
+    public static function parler() // Le static permet de faire une fonction qui est pour la classe et non pour l'objets
+    {
+        print('Je suis le 3ème personnage');
     }
 }
